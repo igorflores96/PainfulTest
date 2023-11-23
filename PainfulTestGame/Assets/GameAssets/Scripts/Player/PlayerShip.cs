@@ -1,19 +1,26 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
-public class PlayerShip : MonoBehaviour
+public class PlayerShip : MonoBehaviour, IDamageable
 {
     [Header("Movement Variables")]
     [SerializeField] private float _playerSpeed;
-    [SerializeField] private float _playerRotation;
-    [SerializeField] private PlayerInput _playerInput;
-    private Rigidbody2D _shipRb;
+    [SerializeField] private float _playerRotationSpeed;
+    
+    [Header("Bullets")]
+    [SerializeField] private BulletPool _bulletStorage;
+    [SerializeField] private float _yCannonBallOfsset;
+    
+    private PlayerInput _playerInput;
 
-    private void Awake() {
-
-        _shipRb = GetComponent<Rigidbody2D>();
+    private void Awake() 
+    {
         _playerInput = new PlayerInput();
+        _playerInput.Attack.SingleAttack.performed += SingleAttack;
+        _playerInput.Attack.HeavyAttack.performed += HeavyAttack;
+
     }
 
     private void OnEnable() 
@@ -52,12 +59,42 @@ public class PlayerShip : MonoBehaviour
 
         if(playerRotatingRight)
         {
-            transform.Rotate(new Vector3(0.0f, 0.0f, 1.0f), _playerRotation);
+            transform.Rotate(new Vector3(0.0f, 0.0f, 1.0f), _playerRotationSpeed);
 
         }
         else if(playerRotatingLeft)
         {
-            transform.Rotate(new Vector3(0.0f, 0.0f, 1.0f), -_playerRotation);
+            transform.Rotate(new Vector3(0.0f, 0.0f, 1.0f), -_playerRotationSpeed);
         }
+    }
+
+    private void SingleAttack(InputAction.CallbackContext context)
+    {
+        if(context.performed)
+        {
+            GameObject canonBall = _bulletStorage.GetBullet();
+            
+            Vector3 spawnPosition = transform.position - transform.up * _yCannonBallOfsset;
+            canonBall.transform.position = spawnPosition;
+            
+            Bullet bullet;
+            if(canonBall.TryGetComponent(out bullet))
+            {
+                bullet.SetStorageToReturn(_bulletStorage);
+                bullet.SetDestiny(transform.rotation);
+            }
+        }
+    }
+
+    private void HeavyAttack(InputAction.CallbackContext context)
+    {
+        if(context.performed)
+        {       
+        }
+    }
+
+    public void TakeDamage(int damageValue)
+    {
+
     }
 }

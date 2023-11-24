@@ -1,4 +1,8 @@
+using UnityEngine.Events;
+
 public interface IDamageable
-{ 
-      void TakeDamage(float damageValue);
+{
+    UnityEvent OnShipDestroyed { get; set; }
+
+    void TakeDamage(float damageValue);
 }

@@ -8,7 +8,7 @@ public class SpawnManager : MonoBehaviour
     [Header("Timer Data")]
     [SerializeField] private TimerData _timerData;
 
-    [Header("Enemy Pool")]
+    [Header("Enemys Pool")]
     [SerializeField] private EnemysPool _enemyPool;
 
     [Header("Positions to Spawn")]

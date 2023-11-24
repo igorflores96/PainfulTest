@@ -9,12 +9,14 @@ public class GameUiManager : MonoBehaviour
     [SerializeField] private TextMeshProUGUI _timerSession;
     [SerializeField] private TextMeshProUGUI _scoreSession;
     private float _currentTime;
+    private int _currentScore;
 
     private void OnEnable() 
     {
         _currentTime = _timerData.SessionTime;
+        _currentScore = 0;
         _timerSession.text = _currentTime.ToString();
-        _scoreSession.text = "0";
+        _scoreSession.text = "Score: " + _currentScore.ToString();
     }
 
     private void Update() 
@@ -30,5 +32,11 @@ public class GameUiManager : MonoBehaviour
         else
             _timerSession.text = "Time: " + _currentTime.ToString("00");
 
+    }
+
+    public void IncreaseScore()
+    {
+        _currentScore++;
+        _scoreSession.text = "Score: " + _currentScore.ToString();
     }
 }

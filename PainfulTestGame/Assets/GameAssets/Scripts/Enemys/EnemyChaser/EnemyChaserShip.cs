@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.UI;
 
 public class EnemyChaserShip : Ship
@@ -8,6 +9,9 @@ public class EnemyChaserShip : Ship
     
     [Header("Lifer Bar To Fill")]
     [SerializeField] private Image _lifeBar;
+
+    [Header("Ship Destroyed Event")]
+    public UnityEvent _OnShipDestroyed;
     private float _shipSpeed;
     private float _shipRotationSpeed;
     private float _shipHealth;
@@ -48,6 +52,7 @@ public class EnemyChaserShip : Ship
         if(_shipHealth <= 0)
         {
             _enemyHarbor.ReturnEnemy(this.gameObject);
+            _OnShipDestroyed?.Invoke();
         }
     }
 
@@ -84,5 +89,11 @@ public class EnemyChaserShip : Ship
     public EnemysPool EnemyHarbor
     {
         set {_enemyHarbor = value;}
+    }
+
+    public override UnityEvent OnShipDestroyed 
+    { 
+        get {return _OnShipDestroyed;}
+        set {_OnShipDestroyed = value; }
     }
 }

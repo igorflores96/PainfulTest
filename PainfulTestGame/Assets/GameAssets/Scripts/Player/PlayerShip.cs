@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
 
@@ -12,6 +13,9 @@ public class PlayerShip : Ship
     
     [Header("Life Bar To Fill")]
     [SerializeField] private Image _lifeBar;
+
+    [Header("Ship Destroyed Event")]
+    public UnityEvent _OnShipDestroyed;
     private float _playerSpeed;
     private float _playerRotationSpeed;
     private float _playerHealth;
@@ -121,5 +125,11 @@ public class PlayerShip : Ship
     {
         _playerHealth -= damageValue;
         _lifeBar.fillAmount = _playerHealth / ShipsAttributes.ShipHealth;
+    }
+
+    public override UnityEvent OnShipDestroyed 
+    { 
+        get {return _OnShipDestroyed;}
+        set {_OnShipDestroyed = value; }
     }
 }

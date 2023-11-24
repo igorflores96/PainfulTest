@@ -1,17 +1,20 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class PlayerShip : MonoBehaviour, IDamageable
-{
-    [Header("Movement Variables")]
-    [SerializeField] private float _playerSpeed;
-    [SerializeField] private float _playerRotationSpeed;
-    
+public class PlayerShip : Ship
+{   
     [Header("Bullets")]
-    [SerializeField] private BulletPool _bulletStorage;
-    [SerializeField] private float _yCannonBallOfsset;
+    [SerializeField] private BulletPool _singleBulletStorage;
+    [SerializeField] private float _yOffSetSingleAttack;
+    [SerializeField] private float _xOffSetHeavyAttack;
+    [SerializeField] private int _bulletsForHeavyAttack;
+    private float _playerSpeed;
+    private float _playerRotationSpeed;
+    private float _playerHealth;
+    private float _playerAttack;
     
     private PlayerInput _playerInput;
 
@@ -20,12 +23,16 @@ public class PlayerShip : MonoBehaviour, IDamageable
         _playerInput = new PlayerInput();
         _playerInput.Attack.SingleAttack.performed += SingleAttack;
         _playerInput.Attack.HeavyAttack.performed += HeavyAttack;
-
     }
 
     private void OnEnable() 
     {
         _playerInput.Enable();
+        _playerSpeed = ShipsAttributes.ShipSpeed;
+        _playerRotationSpeed = ShipsAttributes.ShipRotationSpeed;
+        _playerHealth = ShipsAttributes.ShipHealth;
+        _playerAttack = ShipsAttributes.ShipDamageAttack;
+
     }
 
     private void OnDisable() 
@@ -35,11 +42,11 @@ public class PlayerShip : MonoBehaviour, IDamageable
 
     private void Update() 
     {
-        MovePlayer();
-        RotatePlayer();
+        MoveShip();
+        RotateShip();
     }
 
-    private void MovePlayer()
+    public override void MoveShip()
     {
         bool playerIsMoving = _playerInput.Movement.Move.ReadValue<float>() > 0.1f;
         
@@ -50,7 +57,7 @@ public class PlayerShip : MonoBehaviour, IDamageable
         }
     }
 
-    private void RotatePlayer()
+    public override void RotateShip()
     {
 
         bool playerRotatingRight = _playerInput.Movement.RotateR.ReadValue<float>() > 0.1f;
@@ -72,16 +79,17 @@ public class PlayerShip : MonoBehaviour, IDamageable
     {
         if(context.performed)
         {
-            GameObject canonBall = _bulletStorage.GetBullet();
+            GameObject canonBall = _singleBulletStorage.GetBullet();
             
-            Vector3 spawnPosition = transform.position - transform.up * _yCannonBallOfsset;
+            Vector3 spawnPosition = transform.position - transform.up * _yOffSetSingleAttack;
             canonBall.transform.position = spawnPosition;
             
             Bullet bullet;
             if(canonBall.TryGetComponent(out bullet))
             {
-                bullet.SetStorageToReturn(_bulletStorage);
-                bullet.SetDestiny(transform.rotation);
+                bullet.BulletDamage = _playerAttack;
+                bullet.SetStorageToReturn(_singleBulletStorage);
+                bullet.SetDestinySingleShoot(transform.rotation);
             }
         }
     }
@@ -89,11 +97,26 @@ public class PlayerShip : MonoBehaviour, IDamageable
     private void HeavyAttack(InputAction.CallbackContext context)
     {
         if(context.performed)
-        {       
+        {
+            for(int bulletQuantity = 0; bulletQuantity < _bulletsForHeavyAttack; bulletQuantity++)
+            {
+                GameObject canonBall = _singleBulletStorage.GetBullet();
+
+                Vector3 spawnPosition = transform.position - transform.right * _xOffSetHeavyAttack;
+                canonBall.transform.position = new Vector3(spawnPosition.x, spawnPosition.y + bulletQuantity, spawnPosition.z);
+
+                
+                Bullet bullet;
+                if(canonBall.TryGetComponent(out bullet))
+                {
+                    bullet.SetStorageToReturn(_singleBulletStorage);
+                    bullet.SetDestinyHeavyShoot(transform.rotation);
+                }     
+            }
         }
     }
 
-    public void TakeDamage(int damageValue)
+    public override void TakeDamage(float damageValue)
     {
 
     }

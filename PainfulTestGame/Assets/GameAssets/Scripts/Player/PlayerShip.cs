@@ -1,8 +1,6 @@
-using System.Collections;
-using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.UI;
 
 public class PlayerShip : Ship
 {   
@@ -11,6 +9,9 @@ public class PlayerShip : Ship
     [SerializeField] private float _yOffSetSingleAttack;
     [SerializeField] private float _xOffSetHeavyAttack;
     [SerializeField] private int _bulletsForHeavyAttack;
+    
+    [Header("Life Bar To Fill")]
+    [SerializeField] private Image _lifeBar;
     private float _playerSpeed;
     private float _playerRotationSpeed;
     private float _playerHealth;

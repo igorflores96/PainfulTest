@@ -1,10 +1,15 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class EnemyChaserShip : Ship
 {
+    [Header("Player Transform")]
     [SerializeField] private Transform _playerTransform;
+    
+    [Header("Lifer Bar To Fill")]
+    [SerializeField] private Image _lifeBar;
     private float _shipSpeed;
     private float _shipRotationSpeed;
     private float _shipHealth;
@@ -20,23 +25,29 @@ public class EnemyChaserShip : Ship
   
     void Update()
     {
-        MoveShip();
-        RotateShip();
+        //MoveShip();
     }
 
     public override void MoveShip()
-    {        
+    {   
         transform.position = Vector2.MoveTowards(transform.position, _playerTransform.position, _shipSpeed * Time.deltaTime);
     }
 
     public override void  RotateShip()
     {
+
     }
 
     public override void TakeDamage(float value)
     {
         _shipHealth -= value;
+        _lifeBar.fillAmount = _shipHealth / ShipsAttributes.ShipHealth;
         Debug.Log(_shipHealth);
+
+        if(_shipHealth <= 0)
+        {
+            Destroy(this.gameObject);
+        }
     }
 
     private void OnTriggerEnter2D(Collider2D other) 

@@ -21,6 +21,7 @@ public class EnemyChaserShip : Ship
     void Update()
     {
         MoveShip();
+        RotateShip();
     }
 
     public override void MoveShip()
@@ -30,7 +31,6 @@ public class EnemyChaserShip : Ship
 
     public override void  RotateShip()
     {
-        
     }
 
     public override void TakeDamage(float value)
@@ -41,10 +41,23 @@ public class EnemyChaserShip : Ship
 
     private void OnTriggerEnter2D(Collider2D other) 
     {
-        Bullet bullet;
-        if(other.TryGetComponent(out bullet))
+        if(other.CompareTag("Player"))
         {
-            TakeDamage(bullet.BulletDamage);
+            Ship playerShip;
+            if(other.TryGetComponent(out playerShip))
+            {
+                playerShip.TakeDamage(_shipAttack);
+            }
+
+            Destroy(this.gameObject);
+        }
+        else
+        {
+            Bullet bullet;
+            if(other.TryGetComponent(out bullet))
+            {
+                TakeDamage(bullet.BulletDamage);
+            }
         }
     }
 }

@@ -5,8 +5,6 @@ using UnityEngine.UI;
 
 public class EnemyChaserShip : Ship
 {
-    [Header("Player Transform")]
-    [SerializeField] private Transform _playerTransform;
     
     [Header("Lifer Bar To Fill")]
     [SerializeField] private Image _lifeBar;
@@ -14,18 +12,21 @@ public class EnemyChaserShip : Ship
     private float _shipRotationSpeed;
     private float _shipHealth;
     private float _shipAttack;
+    private Transform _playerTransform;
+    private EnemysPool _enemyHarbor;
     private void OnEnable() 
     {
         _shipSpeed = ShipsAttributes.ShipSpeed;
         _shipRotationSpeed = ShipsAttributes.ShipRotationSpeed;
         _shipHealth = ShipsAttributes.ShipHealth;
         _shipAttack = ShipsAttributes.ShipDamageAttack;
+        _lifeBar.fillAmount = _shipHealth / ShipsAttributes.ShipHealth;
     }
 
   
     void Update()
     {
-        //MoveShip();
+        MoveShip();
     }
 
     public override void MoveShip()
@@ -42,33 +43,46 @@ public class EnemyChaserShip : Ship
     {
         _shipHealth -= value;
         _lifeBar.fillAmount = _shipHealth / ShipsAttributes.ShipHealth;
-        Debug.Log(_shipHealth);
+
 
         if(_shipHealth <= 0)
         {
-            Destroy(this.gameObject);
+            _enemyHarbor.ReturnEnemy(this.gameObject);
         }
     }
 
     private void OnTriggerEnter2D(Collider2D other) 
     {
-        if(other.CompareTag("Player"))
+        Bullet bullet;
+        if(other.TryGetComponent(out bullet))
+        {
+            TakeDamage(bullet.BulletDamage);
+        }
+    }
+
+    private void OnCollisionEnter2D(Collision2D other) 
+    {
+
+        if(other.gameObject.CompareTag("Player"))
         {
             Ship playerShip;
-            if(other.TryGetComponent(out playerShip))
+            if(other.gameObject.TryGetComponent(out playerShip))
             {
                 playerShip.TakeDamage(_shipAttack);
             }
 
-            Destroy(this.gameObject);
+            _enemyHarbor.ReturnEnemy(this.gameObject);
         }
-        else
-        {
-            Bullet bullet;
-            if(other.TryGetComponent(out bullet))
-            {
-                TakeDamage(bullet.BulletDamage);
-            }
-        }
+        
+    }
+
+    public Transform PlayerTransform
+    {
+        set {_playerTransform = value;}
+    }
+
+    public EnemysPool EnemyHarbor
+    {
+        set {_enemyHarbor = value;}
     }
 }

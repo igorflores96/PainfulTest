@@ -120,6 +120,6 @@ public class PlayerShip : Ship
     public override void TakeDamage(float damageValue)
     {
         _playerHealth -= damageValue;
-        Debug.Log(_playerHealth);
+        _lifeBar.fillAmount = _playerHealth / ShipsAttributes.ShipHealth;
     }
 }

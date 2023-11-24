@@ -12,5 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5c26a31d4746694ca4aae2e83dda349, type: 3}
   m_Name: Data
   m_EditorClassIdentifier: 
-  SessionTime: 90
-  SpawnEnemyTime: 5
+  SessionTime: 60
+  SpawnEnemyTime: 4

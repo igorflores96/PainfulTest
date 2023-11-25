@@ -19,6 +19,7 @@ public class GameUiManager : MonoBehaviour
 
     private float _currentTime;
     private int _currentScore;
+    private bool _gameIsOver;
 
     public UnityEvent OnGameIsOver;
 
@@ -31,6 +32,7 @@ public class GameUiManager : MonoBehaviour
         _currentScore = 0;
         _timerSession.text = _currentTime.ToString();
         _scoreSession.text = "Score: " + _currentScore.ToString();
+        _gameIsOver = false;
     }
 
     private void Update() 
@@ -49,6 +51,7 @@ public class GameUiManager : MonoBehaviour
         if(_currentTime < 0f)
         {
             _currentTime = 0.0f;
+            _gameIsOver = true;
             ShowEndScreen();
         }
     }
@@ -70,13 +73,17 @@ public class GameUiManager : MonoBehaviour
 
     public void ShowPauseGameScreen()
     {
-        _finalScoreText.text = "Current Score: " + _currentScore.ToString();
-        _finalScreen.SetActive(true);
+        if(!_gameIsOver)
+        {
+            _finalScreen.SetActive(true);
+            _finalScoreText.text = "Current Score: " + _currentScore.ToString();
+        }
     }
 
     public void HidePauseGameScreen()
     {
-        _finalScreen.SetActive(false);   
+        if(!_gameIsOver)
+            _finalScreen.SetActive(false);
     }
 
     private void PlayAgainIsCliked()

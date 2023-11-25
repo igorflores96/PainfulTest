@@ -6,12 +6,16 @@ public class Bullet : MonoBehaviour
 {
     [SerializeField] private float _bulletVelocity;
     [SerializeField] private Rigidbody2D _bulletRb;
+
+    [Header("Animations settings")]
+    [SerializeField] private Sprite _originalSprite;
+    [SerializeField] private Animator _animator;
     private BulletPool _bulletStorage;
     private float _bulletDamage;
 
     private void OnTriggerEnter2D(Collider2D other) 
     {
-        ReturnBullet();
+        _animator.SetBool("Explode", true);
     }
 
     public void SetDestinySingleShoot(Quaternion rotation)
@@ -32,6 +36,7 @@ public class Bullet : MonoBehaviour
 
     private void ReturnBullet()
     {
+        GetComponent<SpriteRenderer>().sprite = _originalSprite;
         _bulletStorage.ReturnBullet(this.gameObject);
     }
 

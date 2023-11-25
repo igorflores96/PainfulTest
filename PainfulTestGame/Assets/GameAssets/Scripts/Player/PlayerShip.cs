@@ -9,6 +9,8 @@ public class PlayerShip : Ship
     [SerializeField] private BulletPool _singleBulletStorage;
     [SerializeField] private float _yOffSetSingleAttack;
     [SerializeField] private float _xOffSetHeavyAttack;
+    [SerializeField] private float _singleAttackCooldown;
+    [SerializeField] private float _heavyAttackCooldown;
     [SerializeField] private int _bulletsForHeavyAttack;
     
     [Header("Life Bar To Fill")]
@@ -16,10 +18,20 @@ public class PlayerShip : Ship
 
     [Header("Ship Destroyed Event")]
     public UnityEvent _OnShipDestroyed;
+
+    [Header("Animator Ship")]
+    [SerializeField] private Animator _animator;
+    [SerializeField] private Sprite _firstSprite;
     private float _playerSpeed;
     private float _playerRotationSpeed;
     private float _playerHealth;
     private float _playerAttack;
+    private float _currentSingleAttackTime;
+    private float _currentHeavyAttackTime;
+
+    private bool _canSingleAttack;
+    private bool _canHeavyAttack;
+
     
     private PlayerInput _playerInput;
 
@@ -37,6 +49,10 @@ public class PlayerShip : Ship
         _playerRotationSpeed = ShipsAttributes.ShipRotationSpeed;
         _playerHealth = ShipsAttributes.ShipHealth;
         _playerAttack = ShipsAttributes.ShipDamageAttack;
+        _canSingleAttack = true;
+        _canHeavyAttack = true;
+        _currentHeavyAttackTime = _heavyAttackCooldown;
+        _currentSingleAttackTime = _singleAttackCooldown;
         
     }
 
@@ -49,6 +65,7 @@ public class PlayerShip : Ship
     {
         MoveShip();
         RotateShip();
+        HandleAttacksCooldown();
     }
 
     public override void MoveShip()
@@ -80,10 +97,40 @@ public class PlayerShip : Ship
         }
     }
 
+    private void HandleAttacksCooldown()
+    {
+        if(!_canSingleAttack)
+        {
+            _currentSingleAttackTime -= 1.0f * Time.deltaTime;
+            
+            if(_currentSingleAttackTime < 0.0f)
+            {
+                _canSingleAttack = true;
+                _currentSingleAttackTime = _singleAttackCooldown;
+            }
+                
+        } 
+
+
+        if(!_canHeavyAttack)
+        {
+            _currentHeavyAttackTime -= 1.0f * Time.deltaTime;
+            
+            if(_currentHeavyAttackTime < 0.0f)
+            {
+                _canHeavyAttack = true;
+                _currentHeavyAttackTime = _heavyAttackCooldown;
+            }
+                
+        }     
+    }
+
     private void SingleAttack(InputAction.CallbackContext context)
     {
-        if(context.performed)
+        if(context.performed && _canSingleAttack)
         {
+            _canSingleAttack = false;
+
             GameObject canonBall = _singleBulletStorage.GetBullet();
             
             Vector3 spawnPosition = transform.position - transform.up * _yOffSetSingleAttack;
@@ -101,8 +148,10 @@ public class PlayerShip : Ship
 
     private void HeavyAttack(InputAction.CallbackContext context)
     {
-        if(context.performed)
+        if(context.performed && _canHeavyAttack)
         {
+            _canHeavyAttack = false;
+
             for(int bulletQuantity = 0; bulletQuantity < _bulletsForHeavyAttack; bulletQuantity++)
             {
                 GameObject canonBall = _singleBulletStorage.GetBullet();
@@ -114,6 +163,7 @@ public class PlayerShip : Ship
                 Bullet bullet;
                 if(canonBall.TryGetComponent(out bullet))
                 {
+                    bullet.BulletDamage = _playerAttack;
                     bullet.SetStorageToReturn(_singleBulletStorage);
                     bullet.SetDestinyHeavyShoot(transform.rotation);
                 }     
@@ -126,9 +176,32 @@ public class PlayerShip : Ship
         _playerHealth -= damageValue;
         _lifeBar.fillAmount = _playerHealth / ShipsAttributes.ShipHealth;
 
+        if(_playerHealth < (ShipsAttributes.ShipHealth / 2))
+            _animator.SetBool("SecondDamage", true);
+        else if(_playerHealth < ShipsAttributes.ShipHealth)
+            _animator.SetBool("FirstDamage",true);
+
+
         if(_playerHealth <= 0)
         {
-            _OnShipDestroyed?.Invoke();
+            _animator.SetBool("Died", true);
+            _animator.SetBool("FirstDamage",false);
+            _animator.SetBool("SecondDamage", false);
+            
+        }
+    }
+
+    private void PlayerDied()
+    {
+        _OnShipDestroyed?.Invoke();
+    }
+
+    private void OnTriggerEnter2D(Collider2D other) 
+    {
+        Bullet bullet;
+        if(other.TryGetComponent(out bullet))
+        {
+            TakeDamage(bullet.BulletDamage);
         }
     }
 

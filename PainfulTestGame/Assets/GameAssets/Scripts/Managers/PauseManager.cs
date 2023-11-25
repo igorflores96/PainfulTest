@@ -13,7 +13,7 @@ public class PauseManager : MonoBehaviour
         _playerInput = new PlayerInput();
         _playerInput.Pause.PauseGame.performed += PauseGame;
         _gameIsPaused = false;
-        UnPause();
+        Time.timeScale = 1.0f;
     }
 
     private void OnEnable() 
@@ -44,11 +44,6 @@ public class PauseManager : MonoBehaviour
                 _gameIsPaused = false;
             }
         }
-    }
-
-    private void UnPause()
-    {
-        Time.timeScale = 1.0f;
     }
 
     public void Pause()

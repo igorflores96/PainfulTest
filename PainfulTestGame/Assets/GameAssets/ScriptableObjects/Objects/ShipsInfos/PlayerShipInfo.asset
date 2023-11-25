@@ -15,4 +15,4 @@ MonoBehaviour:
   ShipSpeed: 3
   ShipRotationSpeed: 0.2
   ShipHealth: 100
-  ShipDamageAttack: 5
+  ShipDamageAttack: 10

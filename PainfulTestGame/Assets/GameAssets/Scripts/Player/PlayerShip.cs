@@ -37,7 +37,7 @@ public class PlayerShip : Ship
         _playerRotationSpeed = ShipsAttributes.ShipRotationSpeed;
         _playerHealth = ShipsAttributes.ShipHealth;
         _playerAttack = ShipsAttributes.ShipDamageAttack;
-
+        
     }
 
     private void OnDisable() 
@@ -125,6 +125,11 @@ public class PlayerShip : Ship
     {
         _playerHealth -= damageValue;
         _lifeBar.fillAmount = _playerHealth / ShipsAttributes.ShipHealth;
+
+        if(_playerHealth <= 0)
+        {
+            _OnShipDestroyed?.Invoke();
+        }
     }
 
     public override UnityEvent OnShipDestroyed 

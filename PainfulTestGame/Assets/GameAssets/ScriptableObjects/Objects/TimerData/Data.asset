@@ -13,4 +13,4 @@ MonoBehaviour:
   m_Name: Data
   m_EditorClassIdentifier: 
   SessionTime: 60
-  SpawnEnemyTime: 4
+  SpawnEnemyTime: 2

@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8105614b17bfc1a4ca4f72eeaa17088f, type: 3}
   m_Name: EnemyChaserShipInfo
   m_EditorClassIdentifier: 
-  ShipSpeed: 3
+  ShipSpeed: 1.5
   ShipRotationSpeed: 0.4
   ShipHealth: 60
-  ShipDamageAttack: 50
+  ShipDamageAttack: 25
